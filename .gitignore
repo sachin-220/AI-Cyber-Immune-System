@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+*.so
+
+# C/C++ build artifacts (ESP32 / Arduino)
+.pio/
+build/
+*.bin
+*.elf
+*.hex
+
+# Environments & secrets
+.env
+.env.*
+*.env
+!.env.example
+venv/
+.venv/
+env/
+
+# Node / Frontend
+node_modules/
+*/node_modules/
+npm-debug.log*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

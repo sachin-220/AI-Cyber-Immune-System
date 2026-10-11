@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoShield Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; flex-wrap: wrap; }
+        .panel { width: 45%; margin: 10px; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        canvas { max-width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>AutoShield SOC Dashboard</h1>
+    <div class="container">
+        <div class="panel">
+            <h2>Trust Score Trends</h2>
+            <canvas id="trustChart"></canvas>
+        </div>
+        <div class="panel">
+            <h2>Recent Threats</h2>
+            <ul id="threatsList"></ul>
+        </div>
+        <div class="panel">
+            <h2>Telemetry Data</h2>
+            <canvas id="telemetryChart"></canvas>
+        </div>
+        <div class="panel">
+            <h2>Blockchain Ledger</h2>
+            <ul id="ledgerList"></ul>
+        </div>
+    </div>
+
+    <script>
+        const backendURL = 'http://localhost:8000';
+
+        async function fetchData(endpoint) {
+            const response = await fetch(`${backendURL}${endpoint}`);
+            return await response.json();
+        }
+
+        async function updateDashboard() {
+            // Fetch telemetry
+            const telemetryData = await fetchData('/telemetry');
+            const threatsData = await fetchData('/threats');
+            const ledgerData = await fetchData('/blockchain');
+
+            // Update trust score chart
+            const trustCtx = document.getElementById('trustChart').getContext('2d');
+            const trustScores = telemetryData.telemetry.map(t => t.trust_score);
+            const timestamps = telemetryData.telemetry.map(t => new Date(t.timestamp).toLocaleTimeString());
+            
+            new Chart(trustCtx, {
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Trust Score',
+                        data: trustScores,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                }
+            });
+
+            // Update threats list
+            const threatsList = document.getElementById('threatsList');
+            threatsList.innerHTML = '';
+            threatsData.threats.forEach(threat => {
+                const li = document.createElement('li');
+                li.textContent = `${threat.event_type}: ${threat.description}`;
+                threatsList.appendChild(li);
+            });
+
+            // Update telemetry chart
+            const telCtx = document.getElementById('telemetryChart').getContext('2d');
+            const rssiValues = telemetryData.telemetry.map(t => t.rssi);
+            
+            new Chart(telCtx, {
+                type: 'bar',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'RSSI',
+                        data: rssiValues,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                }
+            });
+
+            // Update ledger
+            const ledgerList = document.getElementById('ledgerList');
+            ledgerList.innerHTML = '';
+            ledgerData.ledger.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `Hash: ${entry.hash.substring(0, 16)}...`;
+                ledgerList.appendChild(li);
+            });
+        }
+
+        // Update every 10 seconds
+        setInterval(updateDashboard, 10000);
+        updateDashboard();
+    </script>
+</body>
+</html>

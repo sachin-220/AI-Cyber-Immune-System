@@ -1,0 +1,6 @@
+timestamp,threat_type,risk_level,anomaly_detected
+2026-02-21T10:00:00Z,malware,8.5,true
+2026-02-21T10:05:00Z,phishing,6.2,false
+2026-02-21T10:10:00Z,ddos,9.1,true
+2026-02-21T10:15:00Z,intrusion,7.8,true
+2026-02-21T10:20:00Z,normal,2.1,false

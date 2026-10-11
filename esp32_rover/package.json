@@ -1,0 +1,15 @@
+{
+  "name": "autoshield-rover-nodejs",
+  "version": "1.0.0",
+  "description": "AutoShield ESP32 Rover simulation in Node.js",
+  "main": "esp32_rover.js",
+  "scripts": {
+    "start": "node esp32_rover.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "keywords": ["autoshield", "iot", "security", "rover"],
+  "author": "",
+  "license": "MIT"
+}
